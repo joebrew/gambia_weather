@@ -1,0 +1,134 @@
+---
+title: "Gambia weather plots"
+author: "Joe Brew"
+date: "January 31, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Basic knitr options
+library(knitr)
+opts_chunk$set(comment = NA, 
+               echo = FALSE, 
+               warning = FALSE, 
+               message = FALSE, 
+               error = TRUE, 
+               cache = FALSE)
+```
+
+```{r}
+# Get weather data
+source('get_weather_data.R')
+precipitation_daily <- read_csv('weather_data/aggregated/precipitation_daily.csv')
+precipitation_weekly <- read_csv('weather_data/aggregated/precipitation_weekly.csv')
+precipitation_monthly <- read_csv('weather_data/aggregated/precipitation_monthly.csv')
+
+```
+
+# 2014-2016
+
+```{r}
+
+library(ggplot2)
+ggplot(data = precipitation_daily,
+       aes(x = date,
+           y = precipitation)) +
+  geom_point(alpha = 0.6, color = 'darkgreen') +
+  geom_line(alpha = 0.5, color = 'darkgreen') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = 'Daily',
+       x = 'Date',
+       y = 'Milimeters') +
+  theme_bw()
+```
+
+```{r}
+ggplot(data = precipitation_weekly,
+       aes(x = week,
+           y = precipitation)) +
+  geom_point(alpha = 0.6, color = 'darkgreen') +
+  geom_line(alpha = 0.5, color = 'darkgreen') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = 'Weekly',
+       x = 'Week',
+       y = 'Milimeters') +
+  theme_bw() +
+  facet_wrap(~year)
+```
+
+```{r}
+# Get months
+months <- format(as.Date(paste0('2016-',
+                 1:12,
+                 '-01')), '%B')
+precipitation_monthly$month_chr <- factor(precipitation_monthly$month,
+                                      levels = as.character(1:12),
+                                      labels = months)
+ggplot(data = precipitation_monthly,
+       aes(x = month_chr,
+           y = precipitation)) +
+  geom_bar(alpha = 0.6, 
+           fill = 'darkgreen',
+           stat = 'identity') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = 'Monthly',
+       x = 'Month',
+       y = 'Milimeters') +
+  theme_bw() +
+  facet_wrap(~year) +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+# 2016 only
+
+
+```{r}
+ggplot(data = precipitation_daily %>%
+         filter(year == 2016),
+       aes(x = date,
+           y = precipitation)) +
+  geom_point(alpha = 0.6, color = 'darkgreen') +
+  geom_line(alpha = 0.5, color = 'darkgreen') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = '2016, Daily',
+       x = 'Date',
+       y = 'Milimeters') +
+  theme_bw()
+```
+
+```{r}
+ggplot(data = precipitation_weekly %>%
+         filter(year == 2016),
+       aes(x = week,
+           y = precipitation)) +
+  geom_point(alpha = 0.6, color = 'darkgreen') +
+  geom_line(alpha = 0.5, color = 'darkgreen') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = 'Weekly',
+       x = 'Week',
+       y = 'Milimeters') +
+  theme_bw()
+```
+
+```{r}
+# Get months
+months <- format(as.Date(paste0('2016-',
+                 1:12,
+                 '-01')), '%B')
+precipitation_monthly$month_chr <- factor(precipitation_monthly$month,
+                                      levels = as.character(1:12),
+                                      labels = months)
+ggplot(data = precipitation_monthly %>%
+         filter(year == 2016),
+       aes(x = month_chr,
+           y = precipitation)) +
+  geom_bar(alpha = 0.6, 
+           fill = 'darkgreen',
+           stat = 'identity') +
+  labs(title = 'Precipitation in the Gambia',
+       subtitle = 'Monthly',
+       x = 'Month',
+       y = 'Milimeters') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90))
+```
